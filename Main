@@ -1,0 +1,125 @@
+import random
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.public_opinion = 50
+        self.supporters = 50
+        self.opponents = 50
+        self.bills_proposed = []
+        self.bills_passed = []
+        self.questions = [
+            {
+                "question": "What is the capital of the United States?",
+                "answer": "Washington, D.C."
+            },
+            {
+                "question": "Who was the first president of the United States?",
+                "answer": "George Washington"
+            },
+            {
+                "question": "How many branches of government are there in the United States?",
+                "answer": "Three"
+            },
+            {
+                "question": "What is the supreme law of the land in the United States?",
+                "answer": "The Constitution"
+            },
+            {
+                "question": "Who has the power to veto legislation in the United States?",
+                "answer": "The President"
+            },
+            {
+                "question": "What are the first ten amendments to the Constitution called?",
+                "answer": "The Bill of Rights"
+            },
+            {
+                "question": "Who is the current Chief Justice of the United States Supreme Court?",
+                "answer": "John Roberts"
+            }
+        ]
+        random.shuffle(self.questions)
+
+    def introduce(self):
+        print(f"Welcome, {self.name}! You are now a legislator.")
+
+    def propose_bill(self, bill_name):
+        self.bills_proposed.append(bill_name)
+
+        # Generate a random event
+        event = random.choice(["public_opinion", "supporters", "opponents"])
+        impact = random.randint(5, 20)
+
+        if event == "public_opinion":
+            self.public_opinion += impact
+        elif event == "supporters":
+            self.supporters += impact
+        else:
+            self.opponents += impact
+
+    def pass_bill(self, bill_name):
+        if bill_name in self.bills_proposed:
+            # Ask a random question
+            question = random.choice(self.questions)
+            print(question["question"])
+            answer = input("Your answer: ")
+            if answer.lower() == question["answer"].lower():
+                supporters_gained = random.randint(5, 15)
+                self.supporters += supporters_gained
+                self.bills_passed.append(bill_name)
+                self.bills_proposed.remove(bill_name)
+                print(f"Congratulations! Your bill '{bill_name}' has been passed.")
+                print(f"You gained {supporters_gained} supporters.")
+            else:
+                supporters_lost = random.randint(5, 15)
+                self.supporters -= supporters_lost
+                print(f"Incorrect answer. You lost {supporters_lost} supporters.")
+        else:
+            print("You cannot pass a bill that hasn't been proposed.")
+
+    def check_status(self):
+        print(f"Public Opinion: {self.public_opinion}")
+        print(f"Supporters: {self.supporters}")
+        print(f"Opponents: {self.opponents}")
+        print(f"Bills Proposed: {self.bills_proposed}")
+        print(f"Bills Passed: {self.bills_passed}")
+
+def main():
+    player_name = input("Enter your name: ")
+    player = Player(player_name)
+    player.introduce()
+
+    while True:
+        print("\nWhat would you like to do?")
+        print("1. Propose a bill")
+        print("2. Check status")
+        print("3. Pass a bill")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            bill_name = input("Enter the name of the bill: ")
+            player.propose_bill(bill_name)
+        elif choice == "2":
+            player.check_status()
+        elif choice == "3":
+            if not player.bills_proposed:
+                print("You have no bills to pass.")
+            else:
+                print("Select a bill to pass:")
+                for i, bill in enumerate(player.bills_proposed):
+                    print(f"{i+1}. {bill}")
+                bill_choice = int(input("Enter the number of the bill you want to pass: "))
+                if 1 <= bill_choice <= len(player.bills_proposed):
+                    player.pass_bill(player.bills_proposed[bill_choice - 1])
+                else:
+                    print("Invalid choice.")
+        elif choice == "4":
+            print("Thank you for playing!")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 4.")
+
+if __name__ == "__main__":
+    main()
